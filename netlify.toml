@@ -1,0 +1,11 @@
+[build]
+  # Direktori tempat Netlify akan menemukan file frontend Anda (HTML, CSS, JS)
+  publish = "public"
+  # Direktori tempat Netlify akan menemukan file serverless function Anda
+  functions = "functions"
+
+[[redirects]]
+  # Arahkan semua request dari /api/* ke function bernama server.js
+  from = "/api/*"
+  to = "/.netlify/functions/server/:splat"
+  status = 200

@@ -1,41 +1,39 @@
-// Impor package yang dibutuhkan
+// Impor paket yang dibutuhkan
 require('dotenv').config();
 const express = require('express');
-const mysql = require('mysql2');
+const { Pool } = require('pg'); // Ganti dari mysql2 ke pg
 const cors = require('cors');
+const serverless = require('serverless-http'); // Impor serverless-http
 
 // Inisialisasi aplikasi Express
 const app = express();
-const PORT = process.env.PORT || 3000;
+const router = express.Router(); // Gunakan Express Router
 
 // Konfigurasi middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.static('public'));
+router.use(cors());
+router.use(express.json());
 
-// Membuat koneksi pool ke MySQL
-const db = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
-}).promise();
+// Membuat koneksi pool ke Neon DB (PostgreSQL)
+// Ambil connection string dari environment variable
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
 
 // === API ENDPOINT UNTUK KALKULASI ===
-app.post('/api/calculate', async (req, res) => {
+// Gunakan router.post bukan app.post
+router.post('/calculate', async (req, res) => {
     try {
-        // 1. Ambil data dari body request (TERMASUK NAMA)
         const { name, gender, age, weight, height, activity: activityFactor } = req.body;
-
-        // 2. Validasi sederhana di server
         if (!name || !gender || !age || !weight || !height || !activityFactor) {
             return res.status(400).json({ message: 'Semua field harus diisi.' });
         }
 
-        // 3. Logika kalkulasi (tidak berubah)
+        // Logika kalkulasi (tidak ada perubahan)
         let bmr = 0;
         let idealWeight = 0;
-
         if (gender === 'male') {
             bmr = 66 + (13.7 * weight) + (5 * height) - (6.8 * age);
             idealWeight = (height - 100) * 0.9;
@@ -43,20 +41,19 @@ app.post('/api/calculate', async (req, res) => {
             bmr = 655 + (9.6 * weight) + (1.8 * height) - (4.7 * age);
             idealWeight = (height - 100) * 0.85;
         }
-
         const tdee = bmr * activityFactor;
 
-        // 4. Simpan hasil ke database MySQL (DENGAN NAMA)
+        // Simpan hasil ke database PostgreSQL
+        // Ganti sintaks SQL: '?' menjadi '$1, $2, ...'
         const sql = `
             INSERT INTO calculations (name, gender, age, weight, height, activity_factor, bmr, tdee, ideal_weight)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         `;
         const values = [name, gender, age, weight, height, activityFactor, bmr, tdee, idealWeight];
-
-        await db.query(sql, values);
+        
+        await pool.query(sql, values);
         console.log(`Data untuk '${name}' berhasil disimpan ke database.`);
 
-        // 5. Kirim hasil kembali ke frontend (tidak berubah)
         res.status(200).json({
             bmr: Math.round(bmr),
             tdee: Math.round(tdee),
@@ -69,7 +66,8 @@ app.post('/api/calculate', async (req, res) => {
     }
 });
 
-// Menjalankan server
-app.listen(PORT, () => {
-    console.log(`Server berjalan di http://localhost:${PORT}`);
-});
+// Mount router ke path utama aplikasi
+app.use('/api', router);
+
+// Ekspor handler untuk Netlify Functions
+module.exports.handler = serverless(app);
