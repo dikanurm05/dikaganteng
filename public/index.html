@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Kalori & Makanan Sehat</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="calculator-container">
+        <h1>Kalkulator Kesehatan Anda 🏃‍♀️🥗</h1>
+        <p class="subtitle">Hitung kebutuhan kalori, berat badan ideal, dan dapatkan rekomendasi makanan sehat.</p>
+
+        <form id="calorie-form">
+            <div class="form-group">
+                <label for="name">Nama Anda</label>
+                <input type="text" id="name" placeholder="Contoh: Budi" required>
+            </div>
+
+            <div class="form-group gender-group">
+                <label>Jenis Kelamin:</label>
+                <div class="radio-container">
+                    <input type="radio" id="male" name="gender" value="male" required>
+                    <label for="male">Laki-laki</label>
+                    <input type="radio" id="female" name="gender" value="female" required>
+                    <label for="female">Perempuan</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="age">Usia (tahun)</label>
+                <input type="number" id="age" placeholder="Contoh: 25" required>
+            </div>
+            <div class="form-group">
+                <label for="weight">Berat Badan (kg)</label>
+                <input type="number" id="weight" step="0.1" placeholder="Contoh: 60.5" required>
+            </div>
+            <div class="form-group">
+                <label for="height">Tinggi Badan (cm)</label>
+                <input type="number" id="height" placeholder="Contoh: 170" required>
+            </div>
+            <div class="form-group">
+                <label for="activity">Tingkat Aktivitas Harian</label>
+                <select id="activity" required>
+                    <option value="" disabled selected>Pilih tingkat aktivitas</option>
+                    <option value="1.2">Sangat Ringan (Pekerja kantoran)</option>
+                    <option value="1.375">Ringan (Olahraga 1-3 kali/minggu)</option>
+                    <option value="1.55">Sedang (Olahraga 3-5 kali/minggu)</option>
+                    <option value="1.725">Berat (Olahraga 6-7 kali/minggu)</option>
+                    <option value="1.9">Sangat Berat (Atlet atau pekerja fisik)</option>
+                </select>
+            </div>
+            <button type="submit">Hitung Sekarang</button>
+        </form>
+
+        <div id="results" class="hidden">
+            <h2>Hasil Perhitungan Anda</h2>
+            <div class="result-item">
+                <p>🔥 Kalori Basal (BMR)</p>
+                <span id="bmr-result">0</span>
+                <p class="unit">kalori/hari</p>
+            </div>
+            <div class="result-item">
+                <p>💪 Total Kalori Harian (TDEE)</p>
+                <span id="tdee-result">0</span>
+                <p class="unit">kalori/hari</p>
+            </div>
+            <div class="result-item">
+                <p>🎯 Berat Badan Ideal</p>
+                <span id="ideal-weight-result">0</span>
+                <p class="unit">kg</p>
+            </div>
+        </div>
+        <div id="food-recommendations" class="hidden">
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
