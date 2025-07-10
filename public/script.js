@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.log('Data yang diterima dari server:', result);
 
+
             if (!response.ok) {
                 throw new Error(result.message || 'Gagal melakukan perhitungan.');
             }
